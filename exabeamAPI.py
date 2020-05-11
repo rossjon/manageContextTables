@@ -44,6 +44,7 @@ class ExabeamAPI:
             resp = urllib.request.urlopen(req, context=self.mySSLContext)
             return resp.read()
         except urllib.error.HTTPError as err:
+            print(url)
             return err
 
     def getTable(self, tableName):
@@ -81,14 +82,31 @@ class ExabeamAPI:
         else:
             print(json.loads(commitResult))
 
-    def createTable(self,tableName):
-        url = self.buildURL("/api/setup/contextTables/")
+    def createTable(self,tableName,objectType,tableType,label=None):
+        validObjectTypes = ('users','assets','misc')
+        validTableTypes  = ('KeyOnly','KeyValue')
+        url = self.buildURL("/api/setup/contextTables")
         body= {}
         body['contextTableName'] = tableName
-        body['objectType'] = 'Miscellaneous'
-        body['tableType'] = 'KeyValue'
-        body['labelAssignment'] = "None"
-        body['label'] = 'null'
+        if objectType in validObjectTypes:
+            body['objectType'] = objectType
+        else:
+            #fail thru to miscellaneous now
+            body['objectType'] = 'Miscellaneous'
+
+        if tableType in validTableTypes:
+            body['tableType'] = tableType
+        else:
+            #fall thru to keyonly for now
+            body['tableType'] = 'KeyOnly'
+
+        if label != None:
+            body['labelAssignment'] = 'Label'
+            body['label'] = label
+        else:
+            body['labelAssignment'] = "None"
+            body['label'] = 'null'
+
         body['connection'] = 'null'
         body['operations'] = []
         body['tableSources'] = []
@@ -98,3 +116,7 @@ class ExabeamAPI:
         body['isEntriesEditable'] = 0
         body['isAdFiltersEditable'] = 0
         return self.executeAPICall(url, body, method='POST')
+
+    def deleteTable(self,tableName):
+        url = self.buildURL("/api/setup/contextTables/{}".format(tableName))
+        return self.executeAPICall(url,method='DELETE')

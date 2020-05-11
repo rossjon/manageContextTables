@@ -27,16 +27,15 @@ def main():
     if args.action == 'append':
         print(myAPI.addRecord(args.actionArgs[0],args.actionArgs[1:],False))
     elif args.action == 'create':
-        #print(myAPI.createTable(args.actionArgs[0]))
-        print('coming soon...')
+        print(myAPI.createTable(args.actionArgs[0],args.actionArgs[1],args.actionArgs[2]))
     elif args.action == 'delete':
-        print('coming soon...')
+        print(myAPI.deleteTable(args.actionArgs[0]))
     elif args.action == 'get':
         print(myAPI.getTable(args.actionArgs[0]))
     elif args.action == 'replace':
         print(myAPI.addRecord(args.actionArgs[0],args.actionArgs[1:],True))
     else:
-        print('not ready yet')
+        print("{} isn't something that I know how to do.".format(args.action))
 
 if __name__ == "__main__":
     main()
